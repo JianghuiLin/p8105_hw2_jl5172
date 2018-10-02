@@ -7,3 +7,75 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+library(tidyverse)
+```
+
+```{r}
+
+nyctransit = read.csv("./NYC_Transit_Subway_Entrance_And_Exit_Data.csv")
+nyctransit = janitor::clean_names(nyctransit)
+```
+
+#Q1
+#Read and clean the data; retain line, station, name, station latitude / longitude, routes served, entry, vending, entrance type, and ADA compliance. 
+
+#Convert the entry variable from character (YES vs NO) to a logical variable (the ifelse or recode function may be useful).
+```{r}
+nycsubset1<-select(nyctransit,line,station_name,station_latitude,station_longitude,route1,route2,route3,route4,route5,route6,route7,route8,route9,route10,route11,entry,vending,entrance_type,ada)
+
+
+```
+
+```{r}
+recode(nycsubset1$entry,"YES"=TRUE,"NO"=FALSE)
+```
+
+#Write a short paragraph about this dataset – explain briefly what variables the dataset contains, describe your data cleaning steps so far, and give the dimension (rows x columns) of the resulting dataset. Are these data tidy?
+
+#the dimension of cleaned dataset is 1868rows*19columns. The three reuqirements for tidy data are 1.Columns are variables. 2.Rows are observations 3.Every value has a cell.This dataset-nycsubset1 is not cosidered because not every value has a cell.
+
+
+```{r}
+nycdistinct<-distinct(nycsubset1,nycsubset1$station_name,nycsubset1$line,.keep_all = TRUE)
+nrow(nycdistinct)
+sum(nycdistinct$ada)
+```
+
+```{r}
+entrancenoven<-filter(nycdistinct,entry=="YES" & vending=="NO")
+nrow(entrancenoven)
+```
+
+Answer the following questions using these data:
+
+How many distinct stations are there? 
+# There are 465 distinct stations here.
+# 
+How many stations are ADA compliant? 
+#84 stations are ADA compliant
+What proportion of station entrances / exits without vending allow entrance?
+5/465=0.1075269
+
+Reformat data so that route number and route name are distinct variables. How many distinct stations serve the A train? Of the stations that serve the A train, how many are ADA compliant?
+
+```{r}
+#cbindnyc<-cbind(nycdistinct[5], mycol = na.omit(unlist(nycdistinct[-1])))
+```
+
+```{r}
+#library(dplyr)
+#nycroutes<-nycdistinct %>% mutate(routes = coalesce(route1,route2,route3,route4,route5,route6,route7,route8,route9,route10,route11)) %>%
+         #select(line,station_name,station_latitude,station_longitude,routes,entry,vending,entrance_type,ada)
+```
+
+```{r}
+#character.data$z = ifelse(is.na(character.data$x),
+                           #character.data$y,character.data$x)
+```
+
+
+```{r}
+#nycdistinct$route1<-ifelse(is.na(nyctransit$route1,nyctransit$route2,nyctransit$route3,nyctransit$route4,nyctransit$route5,nyctransit$route6,nyctransit$route7,nyctransit$route8,nyctransit$route8,nyctransit$route9,nyctransit$route10,nyctransit$route11))
+```
+
