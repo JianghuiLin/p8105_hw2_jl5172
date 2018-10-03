@@ -13,7 +13,7 @@ library(tidyverse)
 
 ```{r}
 
-nyctransit = read.csv("./NYC_Transit_Subway_Entrance_And_Exit_Data.csv")
+nyctransit = read.csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv")
 nyctransit = janitor::clean_names(nyctransit)
 ```
 
@@ -54,20 +54,43 @@ How many distinct stations are there?
 # 
 How many stations are ADA compliant? 
 #84 stations are ADA compliant
+
 What proportion of station entrances / exits without vending allow entrance?
 5/465=0.1075269
 
-Reformat data so that route number and route name are distinct variables. How many distinct stations serve the A train? Of the stations that serve the A train, how many are ADA compliant?
-
+ 
 ```{r}
-#cbindnyc<-cbind(nycdistinct[5], mycol = na.omit(unlist(nycdistinct[-1])))
+routedistinct<-distinct(nycsubset1,nycsubset1$station_name,nycsubset1$line,.keep_all = TRUE)
 ```
 
+Reformat data so that route number and route name are distinct variables.
 ```{r}
-#library(dplyr)
-#nycroutes<-nycdistinct %>% mutate(routes = coalesce(route1,route2,route3,route4,route5,route6,route7,route8,route9,route10,route11)) %>%
-         #select(line,station_name,station_latitude,station_longitude,routes,entry,vending,entrance_type,ada)
+gatherbindnyc<-gather(nycsubset1, key = routes, value=train,route1:route11,na.rm = TRUE)
+
 ```
+
+How many distinct stations serve the A train? Of the stations that serve the A train, 60
+# 60 stations serve A train
+
+```{r}
+serveA<-filter(gatherbindnyc,train=="A")
+serveA<-distinct(serveA,serveA$station_name,serveA$line)
+nrow(serveA)
+```
+
+how many are ADA compliant?
+# 84 stations are ADA compliant.
+```{r}
+ADA<-filter(gatherbindnyc,ada=="TRUE")
+ADA<-distinct(ADA,ADA$station_name,ADA$line)
+nrow(ADA)
+```
+
+
+```{r}
+water<-readxl::read_xlsx("./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx")
+```
+
 
 ```{r}
 #character.data$z = ifelse(is.na(character.data$x),
@@ -77,5 +100,24 @@ Reformat data so that route number and route name are distinct variables. How ma
 
 ```{r}
 #nycdistinct$route1<-ifelse(is.na(nyctransit$route1,nyctransit$route2,nyctransit$route3,nyctransit$route4,nyctransit$route5,nyctransit$route6,nyctransit$route7,nyctransit$route8,nyctransit$route8,nyctransit$route9,nyctransit$route10,nyctransit$route11))
+```
+
+Read and clean the Mr. Trash Wheel sheet:
+
+specify the sheet in the Excel file and to omit columns containing notes (using the range argument and  cell_cols() function)
+use reasonable variable names
+omit rows that do not include dumpster-specific data
+rounds the number of sports balls to the nearest integer and converts the result to an integer variable (using  as.integer)
+```{r}
+library(readxl)
+water<-read_excel("./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx",range="A2:N258")
+water<-filter(water,!is.na(water$Dumpster))
+as.integer(round(water$`Sports Balls`))
+```
+
+Read and clean precipitation data for 2016 and 2017. For each, omit rows without precipitation data and add a variable year. Next, combine datasets and convert month to a character variable (the variable month.name is built into R and should be useful).
+```{r}
+ppt_2017<-read_xlsx("./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = 3)
+ppt_2016<-read_xlsx("./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = 4)
 ```
 
