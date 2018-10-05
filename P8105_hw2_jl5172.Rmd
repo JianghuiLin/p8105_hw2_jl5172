@@ -213,10 +213,10 @@ What state is observed the most?
 
 ```{r}
 brfss_2002<-filter(brfss,year==2002)  # Use filter to create new dataframe that cover data in 2002 only.
-median(brfss_2002$Excellent,na.rm=TRUE) # Calulate the median of excellent reponse in 2002 by using built-in function
+median_2002<-median(brfss_2002$Excellent,na.rm=TRUE) # Calulate the median of excellent reponse in 2002 by using built-in function
 ```
 In 2002, what is the median of the “Excellent” response value? 
-# Median is `r median(brfss_2002$Excellent,na.rm=TRUE)`.
+#In 2002, `r median_2002` is the median of "Excellent" response value
 
 
 

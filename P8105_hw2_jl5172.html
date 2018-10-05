@@ -226,9 +226,8 @@ statemost&lt;-filter(statemost,statemost$number== max(statemost$number)) #use fi
 statemost&lt;-statemost$locationabbr # thus finding the most observed state</code></pre>
 <p>What state is observed the most? #NJhas been observed the most.</p>
 <pre class="r"><code>brfss_2002&lt;-filter(brfss,year==2002)  # Use filter to create new dataframe that cover data in 2002 only.
-median(brfss_2002$Excellent,na.rm=TRUE) # Calulate the median of excellent reponse in 2002 by using built-in function</code></pre>
-<pre><code>## [1] 23.6</code></pre>
-<p>In 2002, what is the median of the “Excellent” response value? # Median is 23.6.</p>
+median_2002&lt;-median(brfss_2002$Excellent,na.rm=TRUE) # Calulate the median of excellent reponse in 2002 by using built-in function</code></pre>
+<p>In 2002, what is the median of the “Excellent” response value? #In 2002, 23.6 is the median of “Excellent” response value</p>
 <p>Make a histogram of “Excellent” response values in the year 2002.</p>
 <pre class="r"><code>brfss_2002 %&gt;%  # Plotting using the data from brfss_2002 that contain 2002 data only.
   ggplot(aes(x = Excellent))+  #Using ggplot to plot histogram
