@@ -16,7 +16,8 @@ nyctransit = read.csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv")
 nyctransit = janitor::clean_names(nyctransit)  #clean names
 ```
 
-Q1 Read and clean the data; retain line, station, name, station latitude / longitude, routes served, entry, vending, entrance type, and ADA compliance. 
+Q1
+Read and clean the data; retain line, station, name, station latitude / longitude, routes served, entry, vending, entrance type, and ADA compliance. 
 Convert the entry variable from character (YES vs NO) to a logical variable (the ifelse or recode function may be useful).
 ```{r,nycsubset1}
 nycsubset1<-select(nyctransit,line,station_name,station_latitude,station_longitude,route1,route2,route3,route4,route5,route6,route7,route8,route9,route10,route11,entry,vending,entrance_type,ada)
