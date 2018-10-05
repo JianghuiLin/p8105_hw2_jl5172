@@ -8,161 +8,158 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
-library(tidyverse)
+library(tidyverse)  #load library
 ```
 
 ```{r}
-
 nyctransit = read.csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv")
-nyctransit = janitor::clean_names(nyctransit)
+nyctransit = janitor::clean_names(nyctransit)  #clean names
 ```
 
 #Q1
 #Read and clean the data; retain line, station, name, station latitude / longitude, routes served, entry, vending, entrance type, and ADA compliance. 
 
 #Convert the entry variable from character (YES vs NO) to a logical variable (the ifelse or recode function may be useful).
-```{r}
+```{r,nycsubset1}
 nycsubset1<-select(nyctransit,line,station_name,station_latitude,station_longitude,route1,route2,route3,route4,route5,route6,route7,route8,route9,route10,route11,entry,vending,entrance_type,ada)
 
-
+# create nycsubset1 which contain required varibles using selection
 ```
 
-```{r}
+```{r,Recode,echo=FALSE}
 recode(nycsubset1$entry,"YES"=TRUE,"NO"=FALSE)
+# Use recode function to convert values in 'entry' into logical variables
 ```
 
-#Write a short paragraph about this dataset – explain briefly what variables the dataset contains, describe your data cleaning steps so far, and give the dimension (rows x columns) of the resulting dataset. Are these data tidy?
+Write a short paragraph about this dataset – explain briefly what variables the dataset contains, describe your data cleaning steps so far, and give the dimension (rows x columns) of the resulting dataset. Are these data tidy?
 
 #the dimension of cleaned dataset is 1868rows*19columns. The three reuqirements for tidy data are 1.Columns are variables. 2.Rows are observations 3.Every value has a cell.This dataset-nycsubset1 is not cosidered because not every value has a cell.
 
 
-```{r}
-nycdistinct<-distinct(nycsubset1,nycsubset1$station_name,nycsubset1$line,.keep_all = TRUE)
-nrow(nycdistinct)
-sum(nycdistinct$ada)
+```{r,distinct stations}
+nycdistinct<-distinct(nycsubset1,nycsubset1$station_name,nycsubset1$line,.keep_all = TRUE) # Use distinct function:distinct by station_name and line  to create a new dataframe named 'nycdistinct'
+nrow(nycdistinct)  # Use nrow function to count number of rows for nycdistinct and thus number of distinct stations
+
 ```
 
-```{r}
-entrancenoven<-filter(nycdistinct,entry=="YES" & vending=="NO")
-nrow(entrancenoven)
-```
 
-Answer the following questions using these data:
+
 
 How many distinct stations are there? 
 # There are 465 distinct stations here.
-# 
-How many stations are ADA compliant? 
-#84 stations are ADA compliant
 
-What proportion of station entrances / exits without vending allow entrance?
-5/465=0.1075269
-
- 
-```{r}
-routedistinct<-distinct(nycsubset1,nycsubset1$station_name,nycsubset1$line,.keep_all = TRUE)
+```{r,distinctada}
+sum(nycdistinct$ada) #use sum function to count ada==TRUE since TRUE==1 in R
 ```
+How many stations are ADA compliant? 
+`r sum(nycdistinct$ada) ` stations are ADA compliant
+
+```{r,Entry Without Vending}
+entrancenoven<-filter(nycdistinct,entry=="YES" & vending=="NO") # Use filter to select stations which statisfy conditions that have no vending but allow entrance
+
+entrynovenproportion<-nrow(entrancenoven)/nrow(nycdistinct)  #Get proportion of entance w/o vending stations
+```
+What proportion of station entrances / exits without vending allow entrance?
+`r entrynovenproportion` of stations without vending allow entrance.
+
+
 
 Reformat data so that route number and route name are distinct variables.
 ```{r}
-gatherbindnyc<-gather(nycsubset1, key = routes, value=train,route1:route11,na.rm = TRUE)
-
+gatherbindnyc<-gather(nycsubset1, key = routes, value=train,route1:route11,na.rm = TRUE)  # Use gather function gather values from columns route1:route11 into cells and thus we would have 13198 entries each represent one route & one train.
+# In this way, each distinct stations would have several entries.
 ```
 
+
+
+```{r,Serve A train}
+serveA<-filter(gatherbindnyc,train=="A") 
+serveA<-distinct(serveA,serveA$station_name,serveA$line) 
+#filter to create dataframe that composed of entries serve A train and then distinct by station_name and line to find distinct stations that serve A train.
+nrow(serveA)  # Use nrow to count number of distinct stations that serve A train.
+```
 How many distinct stations serve the A train? Of the stations that serve the A train, 60
-# 60 stations serve A train
+`r nrow(serveA)` stations serve A train
 
-```{r}
-serveA<-filter(gatherbindnyc,train=="A")
-serveA<-distinct(serveA,serveA$station_name,serveA$line)
-nrow(serveA)
-```
 
-how many are ADA compliant?
-# 84 stations are ADA compliant.
-```{r}
-ADA<-filter(gatherbindnyc,ada=="TRUE")
+
+
+```{r,ADA}
+ADA<-filter(gatherbindnyc,ada=="TRUE"&train=="A")
 ADA<-distinct(ADA,ADA$station_name,ADA$line)
-nrow(ADA)
+# filter to create dataframe that composed of entries that is ADA compliant which serve A train at the same time
+nrow(ADA)  # Use nrow to count the distinct stations that are ADA compliant & serving A train.
 ```
+Of the stations that serve the A train, how many are ADA compliant?
+`r nrow(ADA)` stations are ADA compliant.
 
 
-```{r}
-water<-readxl::read_xlsx("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx")
-```
-
-
-```{r}
-#character.data$z = ifelse(is.na(character.data$x),
-                           #character.data$y,character.data$x)
-```
-
-
-```{r}
-#nycdistinct$route1<-ifelse(is.na(nyctransit$route1,nyctransit$route2,nyctransit$route3,nyctransit$route4,nyctransit$route5,nyctransit$route6,nyctransit$route7,nyctransit$route8,nyctransit$route8,nyctransit$route9,nyctransit$route10,nyctransit$route11))
-```
+#Question 2 Starts Here
 
 Read and clean the Mr. Trash Wheel sheet:
-
 specify the sheet in the Excel file and to omit columns containing notes (using the range argument and  cell_cols() function)
 use reasonable variable names
 omit rows that do not include dumpster-specific data
 rounds the number of sports balls to the nearest integer and converts the result to an integer variable (using  as.integer)
 ```{r}
-library(readxl)
-water<-read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx",sheet = 1,range = "A2:N338")
-water<-filter(water,!is.na(water$Dumpster))
-as.integer(round(water$`Sports Balls`))
+library(readxl) #load library
+water<-read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx",sheet = 1,range = "A2:N338") #read excel first sheet from the dataset with range including cell A2 to cell N338 and thus removes the column with notes.
+water<-filter(water,!is.na(water$Dumpster))  #use filter function to wipe out entries without value in Dumpster columns.
+as.integer(round(water$`Sports Balls`)) #round the values in 'Sports Balls' and transform this column into integers
 ```
 
 Read and clean precipitation data for 2016 and 2017. For each, omit rows without precipitation data and add a variable year. Next, combine datasets and convert month to a character variable (the variable month.name is built into R and should be useful).
 janitor clean name
 ```{r}
-ppt_2017<-read_xlsx("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 4,range = "A2:B15")
-ppt_2016<-read_xlsx("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 5,range = "A2:B15")
-ppt_2017<-janitor::clean_names(ppt_2017)
+ppt_2017<-read_xlsx("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 4,range = "A2:B15") #read the 4th sheet from xlsx document which is the precipitation dataset for 2017
+ppt_2016<-read_xlsx("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 5,range = "A2:B15") #read the 5th sheet from xlsx document which is the precipitation dataset for 2016
+ppt_2017<-janitor::clean_names(ppt_2017) #clean names 
 ppt_2016<-janitor::clean_names(ppt_2016)
 ```
 
 
-```{r}
+```{r,Combine ppt data 2016-2017}
 
 ppt_2017<-filter(ppt_2017,!is.na(ppt_2017$total)&!is.na(ppt_2017$month))
-ppt_2017<-mutate(ppt_2017,year=2017)
+ppt_2017<-mutate(ppt_2017,year=2017) #omit rows without value and add a variable year by mutate
 
 ppt_2016<-filter(ppt_2016,!is.na(ppt_2016$total)&!is.na(ppt_2016$month))
-ppt_2016<-mutate(ppt_2016,year=2016)
+ppt_2016<-mutate(ppt_2016,year=2016)  #omit rows without ppt data and add a varible year by mutate
 
-ppt_1617<-rbind(ppt_2016,ppt_2017)
-ppt_1617<-mutate(ppt_1617,month=month.name[month])
+ppt_1617<-rbind(ppt_2016,ppt_2017)  # combine two dataset
+ppt_1617<-mutate(ppt_1617,month=month.name[month]) # convert month into character variable
 ```
 
-```{r}
-ppt_1617<-mutate(ppt_1617,month=month.name[month])
-```
+
 
 Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in both resulting datasets, and give examples of key variables.
-# Based on my observations,'Date'and 'Month' are considered the most important variable variables in the datasets. The amount of precipitation changed as the date goes by and we can see a pattern that precipitation amount is relatively high during summer time and low during winter time.
+# Based on my observations,'Date'and 'Month' are considered the most important  variables in the datasets. The amount of precipitation changed as the date goes by and we can see a pattern that precipitation amount is relatively high during summer time and low during winter time.
 
-For available data, what was the total precipitation in 2017? 
-#32.93
 
-```{r}
+
+```{r,total ppt in 2017}
 sum(ppt_2017$total)
 
 ```
-What was the median number of sports balls in a dumpster in 2016?
-# median is 26.
-```{r}
+For available data, what was the total precipitation in 2017? 
+The total precipitation in 2017 is`r sum(ppt_2017$total)`.
+
+
+
+```{r,Median of Sports Balls 2016}
 water_2016<-filter(water,Year=="2016")
-median(water_2016$`Sports Balls`)
+median_2016<-median(water_2016$`Sports Balls`)
 ```
+What was the median number of sports balls in a dumpster in 2016?
+
+The median of sports balls in dumpster 2016 is `r median_2016`
 
 
-Question 3 starts here
+
+#Question 3 starts here
 ```{r}
-devtools::install_github("p8105/p8105.datasets")
-library(p8105.datasets)
+devtools::install_github("p8105/p8105.datasets") 
+library(p8105.datasets) #install package and load package
 data("brfss_smart2010")
 
 ```
@@ -170,71 +167,78 @@ data("brfss_smart2010")
 For this question:
 
 format the data to use appropriate variable names;
-focus on the “Overall Health” topic
-
-```{r}
-brfss<-janitor::clean_names(brfss_smart2010)
-brfss<-filter(brfss,topic == "Overall Health")
-
-```
-
-
+focus on the “Overall Health” topic;
 exclude variables for class, topic,question,sample size, and everything from lower confidence limit to GeoLocation
-```{r}
+
+```{r,Clean and Filter brfss}
+brfss<-janitor::clean_names(brfss_smart2010) #Clean names 
+brfss<-filter(brfss,topic == "Overall Health") #Use filter to focus on topic "Overall Health"
 brfss<-select(brfss,year,locationabbr,locationdesc,response,data_value)
+#keep columns we want by using select function
 
-```
-
-```{r}
-brfss<-spread(brfss,key=response,value = data_value)
-brfss<-mutate(brfss,excellentgood=(Excellent+`Very good`)/100)
-```
+``` 
 
 
 structure data so that values for Response (“Excellent” to “Poor”) are column names / variables which indicate the proportion of subjects with each response (which are values of Data_value in the original dataset)
 create a new variable showing the proportion of responses that were “Excellent” or “Very Good”
-
-
-How many unique locations are included in the dataset? # 404 distinct locations
-
-Is every state represented?  Yes, there are 51 states which have been represented
+```{r,Reformat brfss}
+brfss<-spread(brfss,key=response,value = data_value) #Use spread function spread Response across multiple columns
+brfss<-mutate(brfss,Excellentgood_proportion=(Excellent+`Very good`)/100)
+#create a new column named 
+```
 
 
 
 ```{r}
-uniquelocations<-nrow(distinct(brfss,locationdesc))
-uniquelocations
-uniquestates<-nrow(distinct(brfss,locationabbr))
-uniquestates
-
+uniquelocations<-nrow(distinct(brfss,locationdesc)) # use distinct function count number of distinct location,disrtinct by column locationdesc
 
 ```
+How many unique locations are included in the dataset? 
+
+There are `r uniquelocations`  distinct locations in the dataset.
 
 
-What state is observed the most?
+
+```{r}
+uniquestates<-nrow(distinct(brfss,locationabbr))
+
+```
+Is every state represented?  
+
+No, there are `r uniquestates` states which have been represented. 
+
+
+
+
 ```{r}
 statemost<-brfss %>% 
   group_by(locationabbr) %>% 
-  summarise(number=n()) 
-filter(statemost,statemost$number== max(statemost$number))
-
+  summarise(number=n()) #using group by to combine observations based on locationabbr and thus we can observe how many times a state has been observed.
+statemost<-filter(statemost,statemost$number== max(statemost$number)) #use filter to find out the state with maximum number in column:number
+statemost<-statemost$locationabbr # thus finding the most observed state
 ```
+What state is observed the most?
 
-In 2002, what is the median of the “Excellent” response value? 
-# Median is 23.6
+`r statemost`has been observed the most.
+
+
+
+
 ```{r}
-brfss_2002<-filter(brfss,year==2002)
-median(brfss_2002$Excellent,na.rm=TRUE)
+brfss_2002<-filter(brfss,year==2002)  # Use filter to create new dataframe that cover data in 2002 only.
+median(brfss_2002$Excellent,na.rm=TRUE) # Calulate the median of excellent reponse in 2002 by using built-in function
 ```
-
+In 2002, what is the median of the “Excellent” response value? 
+# Median is `r median(brfss_2002$Excellent,na.rm=TRUE)`.
 
 
 
 Make a histogram of “Excellent” response values in the year 2002.
 ```{r}
-brfss_2002 %>% 
-  ggplot(aes(x = Excellent))+
-  geom_histogram()
+brfss_2002 %>%  # Plotting using the data from brfss_2002 that contain 2002 data only.
+  ggplot(aes(x = Excellent))+  #Using ggplot to plot histogram
+  geom_histogram()+
+  labs(x="No. of Excellent responses", y= "No. of distinct locations",title="Excellent Response Values 2002")
 # x-axis is the proportion of excellent
 # y-axis is the number of locations.
   
@@ -245,24 +249,11 @@ Make a scatterplot showing the proportion of “Excellent” response values in 
 NYC_QC_2002_2010<-filter(brfss,locationdesc=="NY - New York County"|locationdesc=="NY - Queens County")
 
 NYC_QC_2002_2010 %>% 
-  ggplot(aes(x = locationdesc, y= Excellent ,color =locationdesc))+
-  geom_point()
+  ggplot(aes(x = year, y= Excellent ,color =locationdesc))+
+           geom_point()+
+           labs(x="year", y= "Excellent",title="Excellent Responses in New York County & Queens County" )+
+  theme(legend.position = "bottom")
 
 ```
 
 
-```{r}
-NYC_QC_2002_2010 %>% 
-  ggplot(aes(x = Excellent, y= locationdesc ,color =locationdesc))+
-  geom_point()
-```
-
-
-
-
-brfss %>%
-  group_by(name, month) %>%
-  summarize(mean_tmax = mean(tmax)) %>%
-  ggplot(aes(x = month, y = mean_tmax, color = name)) + 
-    geom_point() + geom_line() + 
-    theme(legend.position = "bottom")
