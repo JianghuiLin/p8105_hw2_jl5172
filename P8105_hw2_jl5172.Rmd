@@ -98,7 +98,7 @@ rounds the number of sports balls to the nearest integer and converts the result
 library(readxl) #load library
 water<-read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx",sheet = 1,range = "A2:N338") #read excel first sheet from the dataset with range including cell A2 to cell N338 and thus removes the column with notes.
 water<-filter(water,!is.na(water$Dumpster))  #use filter function to wipe out entries without value in Dumpster columns.
-as.integer(round(water$`Sports Balls`)) #round the values in 'Sports Balls' and transform this column into integers
+water$`Sports Balls`<-as.integer(round(water$`Sports Balls`)) #round the values in 'Sports Balls' and transform this column into integers
 ```
 
 Read and clean precipitation data for 2016 and 2017. For each, omit rows without precipitation data and add a variable year. Next, combine datasets and convert month to a character variable (the variable month.name is built into R and should be useful).
@@ -122,6 +122,7 @@ ppt_2016<-mutate(ppt_2016,year=2016)  #omit rows without ppt data and add a vari
 ppt_1617<-rbind(ppt_2016,ppt_2017)  # combine two dataset
 ppt_1617<-mutate(ppt_1617,month=month.name[month]) # convert month into character variable
 ```
+
 Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in both resulting datasets, and give examples of key variables.
 # Based on my observations,'Date'and 'Month' are considered the most important  variables in the datasets. The amount of precipitation changed as the date goes by and we can see a pattern that precipitation amount is relatively high during summer time and low during winter time due to the rainfall fluctuation.
 
@@ -215,7 +216,7 @@ brfss_2002<-filter(brfss,year==2002)  # Use filter to create new dataframe that 
 median(brfss_2002$Excellent,na.rm=TRUE) # Calulate the median of excellent reponse in 2002 by using built-in function
 ```
 In 2002, what is the median of the “Excellent” response value? 
-# Median is `r median(brfss_2002$Excellent,na.rm=TRUE)`.
+# Median is `r median(brfss_2002$Excellent,na.rm=TRUE)`
 
 
 
