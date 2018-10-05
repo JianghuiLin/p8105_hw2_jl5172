@@ -123,8 +123,8 @@ ppt_1617<-rbind(ppt_2016,ppt_2017)  # combine two dataset
 ppt_1617<-mutate(ppt_1617,month=month.name[month]) # convert month into character variable
 ```
 
-Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in both resulting datasets, and give examples of key variables.
-# Based on my observations,'Date'and 'Month' are considered the most important  variables in the datasets. The amount of precipitation changed as the date goes by and we can see a pattern that precipitation amount is relatively high during summer time and low during winter time due to the rainfall fluctuation.
+Write a paragraph about these data:
+Based on my observations,'Date'and 'Month' are considered the most important  variables in the datasets. The amount of precipitation changed as the date goes by and we can see a pattern that precipitation amount is relatively high during summer time and low during winter time due to the rainfall fluctuation.
 
 
 
@@ -216,7 +216,7 @@ brfss_2002<-filter(brfss,year==2002)  # Use filter to create new dataframe that 
 median(brfss_2002$Excellent,na.rm=TRUE) # Calulate the median of excellent reponse in 2002 by using built-in function
 ```
 In 2002, what is the median of the “Excellent” response value? 
-# Median is `r median(brfss_2002$Excellent,na.rm=TRUE)`
+# Median is `r median(brfss_2002$Excellent,na.rm=TRUE)`.
 
 
 

@@ -189,7 +189,7 @@ ppt_2016&lt;-mutate(ppt_2016,year=2016)  #omit rows without ppt data and add a v
 
 ppt_1617&lt;-rbind(ppt_2016,ppt_2017)  # combine two dataset
 ppt_1617&lt;-mutate(ppt_1617,month=month.name[month]) # convert month into character variable</code></pre>
-<p>Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in both resulting datasets, and give examples of key variables. # Based on my observations,‘Date’and ’Month’ are considered the most important variables in the datasets. The amount of precipitation changed as the date goes by and we can see a pattern that precipitation amount is relatively high during summer time and low during winter time due to the rainfall fluctuation.</p>
+<p>Write a paragraph about these data: Based on my observations,‘Date’and ’Month’ are considered the most important variables in the datasets. The amount of precipitation changed as the date goes by and we can see a pattern that precipitation amount is relatively high during summer time and low during winter time due to the rainfall fluctuation.</p>
 <pre class="r"><code>sum(ppt_2017$total)</code></pre>
 <pre><code>## [1] 32.93</code></pre>
 <p>For available data, what was the total precipitation in 2017? #The total precipitation in 2017 is32.93.</p>
@@ -228,7 +228,7 @@ statemost&lt;-statemost$locationabbr # thus finding the most observed state</cod
 <pre class="r"><code>brfss_2002&lt;-filter(brfss,year==2002)  # Use filter to create new dataframe that cover data in 2002 only.
 median(brfss_2002$Excellent,na.rm=TRUE) # Calulate the median of excellent reponse in 2002 by using built-in function</code></pre>
 <pre><code>## [1] 23.6</code></pre>
-<p>In 2002, what is the median of the “Excellent” response value? # Median is 23.6</p>
+<p>In 2002, what is the median of the “Excellent” response value? # Median is 23.6.</p>
 <p>Make a histogram of “Excellent” response values in the year 2002.</p>
 <pre class="r"><code>brfss_2002 %&gt;%  # Plotting using the data from brfss_2002 that contain 2002 data only.
   ggplot(aes(x = Excellent))+  #Using ggplot to plot histogram
