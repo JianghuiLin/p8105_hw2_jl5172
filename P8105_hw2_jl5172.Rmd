@@ -16,10 +16,8 @@ nyctransit = read.csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv")
 nyctransit = janitor::clean_names(nyctransit)  #clean names
 ```
 
-#Q1
-#Read and clean the data; retain line, station, name, station latitude / longitude, routes served, entry, vending, entrance type, and ADA compliance. 
-
-#Convert the entry variable from character (YES vs NO) to a logical variable (the ifelse or recode function may be useful).
+Q1 Read and clean the data; retain line, station, name, station latitude / longitude, routes served, entry, vending, entrance type, and ADA compliance. 
+Convert the entry variable from character (YES vs NO) to a logical variable (the ifelse or recode function may be useful).
 ```{r,nycsubset1}
 nycsubset1<-select(nyctransit,line,station_name,station_latitude,station_longitude,route1,route2,route3,route4,route5,route6,route7,route8,route9,route10,route11,entry,vending,entrance_type,ada)
 
@@ -27,13 +25,11 @@ nycsubset1<-select(nyctransit,line,station_name,station_latitude,station_longitu
 ```
 
 ```{r,Recode,echo=FALSE}
-recode(nycsubset1$entry,"YES"=TRUE,"NO"=FALSE)
+nycsubset1$entry<-recode(nycsubset1$entry,"YES"=TRUE,"NO"=FALSE)
 # Use recode function to convert values in 'entry' into logical variables
 ```
-
 Write a short paragraph about this dataset – explain briefly what variables the dataset contains, describe your data cleaning steps so far, and give the dimension (rows x columns) of the resulting dataset. Are these data tidy?
-
-#the dimension of cleaned dataset is 1868rows*19columns. The three reuqirements for tidy data are 1.Columns are variables. 2.Rows are observations 3.Every value has a cell.This dataset-nycsubset1 is not cosidered because not every value has a cell.
+#the dimension of cleaned dataset is 1868rows*19columns.There are 19 variables contained in this data: line,station_name,station_latitude, route1:route11,entry,vending,entrance_type and ada.The three reuqirements for tidy data are 1.Columns are variables. 2.Rows are observations 3.Every value has a cell.This dataset-nycsubset1 is not cosidered because not every value has a cell.
 
 
 ```{r,distinct stations}
@@ -41,26 +37,23 @@ nycdistinct<-distinct(nycsubset1,nycsubset1$station_name,nycsubset1$line,.keep_a
 nrow(nycdistinct)  # Use nrow function to count number of rows for nycdistinct and thus number of distinct stations
 
 ```
-
-
-
-
 How many distinct stations are there? 
-# There are 465 distinct stations here.
+#There are `r nrow(nycdistinct)`  distinct stations here.
+ 
 
 ```{r,distinctada}
 sum(nycdistinct$ada) #use sum function to count ada==TRUE since TRUE==1 in R
 ```
 How many stations are ADA compliant? 
-`r sum(nycdistinct$ada) ` stations are ADA compliant
+#`r sum(nycdistinct$ada) ` stations are ADA compliant
 
 ```{r,Entry Without Vending}
-entrancenoven<-filter(nycdistinct,entry=="YES" & vending=="NO") # Use filter to select stations which statisfy conditions that have no vending but allow entrance
+entrancenoven<-filter(nycdistinct,entry==TRUE & vending=="NO") # Use filter to select stations which statisfy conditions that have no vending but allow entrance
 
 entrynovenproportion<-nrow(entrancenoven)/nrow(nycdistinct)  #Get proportion of entance w/o vending stations
 ```
 What proportion of station entrances / exits without vending allow entrance?
-`r entrynovenproportion` of stations without vending allow entrance.
+#`r entrynovenproportion` of stations without vending allow entrance.
 
 
 
@@ -78,8 +71,8 @@ serveA<-distinct(serveA,serveA$station_name,serveA$line)
 #filter to create dataframe that composed of entries serve A train and then distinct by station_name and line to find distinct stations that serve A train.
 nrow(serveA)  # Use nrow to count number of distinct stations that serve A train.
 ```
-How many distinct stations serve the A train? Of the stations that serve the A train, 60
-`r nrow(serveA)` stations serve A train
+How many distinct stations serve the A train? 
+#`r nrow(serveA)` stations serve A train
 
 
 
@@ -91,7 +84,7 @@ ADA<-distinct(ADA,ADA$station_name,ADA$line)
 nrow(ADA)  # Use nrow to count the distinct stations that are ADA compliant & serving A train.
 ```
 Of the stations that serve the A train, how many are ADA compliant?
-`r nrow(ADA)` stations are ADA compliant.
+#`r nrow(ADA)` stations are ADA compliant.
 
 
 #Question 2 Starts Here
@@ -129,11 +122,8 @@ ppt_2016<-mutate(ppt_2016,year=2016)  #omit rows without ppt data and add a vari
 ppt_1617<-rbind(ppt_2016,ppt_2017)  # combine two dataset
 ppt_1617<-mutate(ppt_1617,month=month.name[month]) # convert month into character variable
 ```
-
-
-
 Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in both resulting datasets, and give examples of key variables.
-# Based on my observations,'Date'and 'Month' are considered the most important  variables in the datasets. The amount of precipitation changed as the date goes by and we can see a pattern that precipitation amount is relatively high during summer time and low during winter time.
+# Based on my observations,'Date'and 'Month' are considered the most important  variables in the datasets. The amount of precipitation changed as the date goes by and we can see a pattern that precipitation amount is relatively high during summer time and low during winter time due to the rainfall fluctuation.
 
 
 
@@ -142,7 +132,7 @@ sum(ppt_2017$total)
 
 ```
 For available data, what was the total precipitation in 2017? 
-The total precipitation in 2017 is`r sum(ppt_2017$total)`.
+#The total precipitation in 2017 is`r sum(ppt_2017$total)`.
 
 
 
@@ -151,8 +141,7 @@ water_2016<-filter(water,Year=="2016")
 median_2016<-median(water_2016$`Sports Balls`)
 ```
 What was the median number of sports balls in a dumpster in 2016?
-
-The median of sports balls in dumpster 2016 is `r median_2016`
+#The median of sports balls in dumpster 2016 is `r median_2016`
 
 
 
@@ -194,8 +183,7 @@ uniquelocations<-nrow(distinct(brfss,locationdesc)) # use distinct function coun
 
 ```
 How many unique locations are included in the dataset? 
-
-There are `r uniquelocations`  distinct locations in the dataset.
+#There are `r uniquelocations`  distinct locations in the dataset.
 
 
 
@@ -204,8 +192,7 @@ uniquestates<-nrow(distinct(brfss,locationabbr))
 
 ```
 Is every state represented?  
-
-No, there are `r uniquestates` states which have been represented. 
+#There are `r uniquestates` states which have been represented. 
 
 
 
@@ -218,8 +205,7 @@ statemost<-filter(statemost,statemost$number== max(statemost$number)) #use filte
 statemost<-statemost$locationabbr # thus finding the most observed state
 ```
 What state is observed the most?
-
-`r statemost`has been observed the most.
+#`r statemost`has been observed the most.
 
 
 
